@@ -149,6 +149,14 @@ unsigned int report_load_at_max_freq(void)
 	return total_load;
 }
 
+
+unsigned int report_avg_load_cpu(unsigned int cpu)
+{
+	struct cpu_load_data *pcpu= &per_cpu(cpuload, cpu);
+
+	return pcpu->cur_load_maxfreq;
+}
+
 static int cpufreq_transition_handler(struct notifier_block *nb,
 			unsigned long val, void *data)
 {
