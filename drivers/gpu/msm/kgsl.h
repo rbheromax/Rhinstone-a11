@@ -25,8 +25,6 @@
 
 #include <mach/kgsl.h>
 
-#include "kgsl_htc.h"
-
 #define KGSL_NAME "kgsl"
 
 #define KGSL_MEMSTORE_SIZE	((int)(PAGE_SIZE * 2))
@@ -138,8 +136,6 @@ struct kgsl_driver {
 		unsigned int histogram[16];
 	} stats;
 	unsigned int full_cache_threshold;
-
-	struct kgsl_driver_htc_priv priv;
 };
 
 extern struct kgsl_driver kgsl_driver;

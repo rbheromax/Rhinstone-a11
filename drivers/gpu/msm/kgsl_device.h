@@ -247,9 +247,6 @@ struct kgsl_device {
 
 	int reset_counter; 
 	int cff_dump_enable;
-
-	
-	int gpu_fault_no_panic;
 };
 
 void kgsl_process_events(struct work_struct *work);

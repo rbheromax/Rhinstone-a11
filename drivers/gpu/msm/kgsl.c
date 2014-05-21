@@ -41,7 +41,6 @@
 #include "kgsl_trace.h"
 #include "kgsl_sync.h"
 #include "adreno.h"
-#include "kgsl_htc.h"
 
 #undef MODULE_PARAM_PREFIX
 #define MODULE_PARAM_PREFIX "kgsl."
@@ -3593,9 +3592,6 @@ int kgsl_device_platform_probe(struct kgsl_device *device)
 	
 	kgsl_pwrctrl_init_sysfs(device);
 
-	
-	kgsl_device_htc_init(device);
-
 	return 0;
 
 error_close_mmu:
@@ -3794,8 +3790,6 @@ static int __init kgsl_core_init(void)
 
 	if (kgsl_memfree_hist_init())
 		KGSL_CORE_ERR("failed to init memfree_hist");
-
-	kgsl_driver_htc_init(&kgsl_driver.priv);
 
 	return 0;
 
