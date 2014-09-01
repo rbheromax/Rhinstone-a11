@@ -378,6 +378,24 @@ extern int reuse_swap_page(struct page *);
 extern int try_to_free_swap(struct page *);
 struct backing_dev_info;
 
+/* linux/mm/thrash.c */
+extern struct mm_struct *swap_token_mm;
+extern void grab_swap_token(struct mm_struct *);
+extern void __put_swap_token(struct mm_struct *);
+extern void disable_swap_token(struct mem_cgroup *memcg);
+
+/* Only allow swap token to have effect if swap is full */
+static inline int has_swap_token(struct mm_struct *mm)
+{
+	return (mm == swap_token_mm && vm_swap_full());
+}
+
+static inline void put_swap_token(struct mm_struct *mm)
+{
+	if (has_swap_token(mm))
+		__put_swap_token(mm);
+}
+
 #ifdef CONFIG_CGROUP_MEM_RES_CTLR
 extern void
 mem_cgroup_uncharge_swapcache(struct page *page, swp_entry_t ent, bool swapout);
