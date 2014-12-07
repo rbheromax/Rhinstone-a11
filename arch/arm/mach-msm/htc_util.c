@@ -632,19 +632,11 @@ static void htc_pm_monitor_work_func(struct work_struct *work)
 	pr_info("[K][PM] hTC PM Statistic start (%02d-%02d %02d:%02d:%02d)\n",
 		tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
 
-	
 	htc_show_interrupts();
 
-	
 	htc_idle_stat_show();
 	htc_idle_stat_clear();
 
-	
-	htc_timer_stats_onoff('0');
-	htc_timer_stats_show(300); 
-	htc_timer_stats_onoff('1');
-
-	
 	htc_print_active_wakeup_sources();
 
 	queue_delayed_work(htc_pm_monitor_wq, &ktop->dwork, msecs_to_jiffies(msm_htc_util_delay_time));
