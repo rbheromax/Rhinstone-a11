@@ -39,8 +39,9 @@ struct page {
 	
 	struct {
 		union {
-			pgoff_t index;		
-			void *freelist;		
+			pgoff_t index;
+			void *freelist;
+			bool pfmemalloc;
 		};
 
 		union {
@@ -52,11 +53,12 @@ struct page {
 				union {
 					atomic_t _mapcount;
 
-					struct {
+					struct { /* SLUB */
 						unsigned inuse:16;
 						unsigned objects:15;
 						unsigned frozen:1;
 					};
+					int units;	/* SLOB */
 				};
 				atomic_t _count;		
 			};
@@ -76,6 +78,9 @@ struct page {
 			short int pobjects;
 #endif
 		};
+
+		struct list_head list;	/* slobs list of pages */
+		struct slab *slab_page; /* slab fields */
 	};
 
 	
@@ -84,8 +89,8 @@ struct page {
 #if USE_SPLIT_PTLOCKS
 		spinlock_t ptl;
 #endif
-		struct kmem_cache *slab;	
-		struct page *first_page;	
+		struct kmem_cache *slab_cache;
+		struct page *first_page;
 	};
 
 #if defined(WANT_PAGE_VIRTUAL)
