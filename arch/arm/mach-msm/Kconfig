@@ -3198,12 +3198,6 @@ config MACH_MEC_WHL
 
 endif
 
-config PERFLOCK
-    depends on CPU_FREQ
-    depends on HTC_PNPMGR
-    default n
-    bool "HTC Performance Lock"
-
 config HTC_DEBUG_RBCPR_8226
     depends on ARCH_MSM8226
     default n
