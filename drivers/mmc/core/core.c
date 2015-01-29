@@ -93,15 +93,7 @@ static struct wake_lock mmc_removal_work_wake_lock;
 
 extern unsigned int get_tamper_sf(void);
 
-extern int powersave_enabled;
 extern bool ac_status;
-
-enum {
-    PP_NORMAL = 0,
-    PP_POWERSAVE = 1,
-    PP_EXTREMELY_POWERSAVE = 2,
-    PP_PERFORMANCE = 4,
-};
 
 bool use_spi_crc = 0;
 module_param(use_spi_crc, bool, 0);
@@ -638,12 +630,6 @@ int mmc_card_start_bkops(struct mmc_card *card)
 	unsigned long flags;
 	struct mmc_host *host = card->host;
 
-	
-	if ((powersave_enabled == PP_EXTREMELY_POWERSAVE) && !ac_status)  {
-		pr_debug("%s: skip bkops due to extreme powersave mode\n", __func__);
-		return 0;
-	}
-
 	mmc_claim_host(host);
 	err = __mmc_switch(card, EXT_CSD_CMD_SET_NORMAL,
 			EXT_CSD_BKOPS_START, 1, 0, false, false);
@@ -719,12 +705,6 @@ void mmc_start_bkops(struct mmc_card *card, bool from_exception)
 		pr_debug("%s: %s: cancel_delayed_work was set, exit\n",
 			 mmc_hostname(card->host), __func__);
 		card->bkops_info.cancel_delayed_work = false;
-		return;
-	}
-
-	
-	if ((powersave_enabled == PP_EXTREMELY_POWERSAVE) && !ac_status)  {
-		pr_debug("%s: skip bkops due to extreme powersave mode\n", __func__);
 		return;
 	}
 
