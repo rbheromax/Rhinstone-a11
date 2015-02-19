@@ -473,13 +473,6 @@ static void pet_watchdog_work(struct work_struct *work)
 	htc_debug_watchdog_dump_irqs(0);
 #endif
 #endif 
-
-#ifdef CONFIG_ARCH_MSM8226
-	
-	if ((mpm_get_timetick() > (htc_pvs_adjust_seconds*WDT_HZ)) && htc_pvs_adjust) {
-		htc_pvs_adjust = false;
-	}
-#endif
 }
 
 static int msm_watchdog_remove(struct platform_device *pdev)

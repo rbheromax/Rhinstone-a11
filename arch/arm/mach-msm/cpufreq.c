@@ -351,20 +351,15 @@ static int __cpuinit msm_cpufreq_cpu_callback(struct notifier_block *nfb,
 		}
 		break;
 	case CPU_UP_PREPARE:
-		set_hotplug_on_footprint(cpu, HOF_ENTER);
 		if (is_clk) {
-			set_hotplug_on_footprint(cpu, HOF_BEFORE_PREPARE_ENABLE_L2);
 			rc = clk_prepare_enable(l2_clk);
 			if (rc < 0)
 				return NOTIFY_BAD;
-			set_hotplug_on_footprint(cpu, HOF_BEFORE_PREPARE_ENABLE_CPU);
 			rc = clk_prepare_enable(cpu_clk[cpu]);
 			if (rc < 0)
 				return NOTIFY_BAD;
-			set_hotplug_on_footprint(cpu, HOF_BEFORE_UPDATE_L2_BW);
 			update_l2_bw(&cpu);
 		}
-		set_hotplug_on_footprint(cpu, HOF_LEAVE);
 		break;
 	default:
 		break;
