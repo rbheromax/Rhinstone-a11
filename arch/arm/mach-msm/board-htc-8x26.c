@@ -79,20 +79,12 @@
 #include <mach/htc_bdaddress.h>
 #endif
 
-#ifdef CONFIG_HTC_BUILD_EDIAG
-#include <linux/android_ediagpmem.h>
-#endif
-
 #ifdef CONFIG_KEXEC_HARDBOOT
 #include <linux/memblock.h>
 #include <asm/setup.h>
 #endif
 #define HTC_8226_PERSISTENT_RAM_PHYS 0x05B00000
-#ifdef CONFIG_HTC_BUILD_EDIAG
-#define HTC_8226_PERSISTENT_RAM_SIZE (SZ_1M - SZ_128K - SZ_64K)
-#else
-#define HTC_8226_PERSISTENT_RAM_SIZE (SZ_1M - SZ_128K)
-#endif
+#define HTC_8226_PERSISTENT_RAM_SIZE (SZ_1M)
 #define HTC_8226_RAM_CONSOLE_SIZE    HTC_8226_PERSISTENT_RAM_SIZE
 
 extern int __init htc_8226_dsi_panel_power_register(void);
@@ -110,69 +102,6 @@ static struct persistent_ram htc_8226_persistent_ram = {
 	.num_descs = ARRAY_SIZE(htc_8226_persistent_ram_descs),
 	.descs     = htc_8226_persistent_ram_descs,
 };
-
-#ifdef CONFIG_HTC_BUILD_EDIAG
-#define MSM_HTC_PMEM_EDIAG_BASE 0x05BD0000
-#define MSM_HTC_PMEM_EDIAG_SIZE SZ_64K
-#define MSM_HTC_PMEM_EDIAG1_BASE MSM_HTC_PMEM_EDIAG_BASE
-#define MSM_HTC_PMEM_EDIAG1_SIZE MSM_HTC_PMEM_EDIAG_SIZE
-#define MSM_HTC_PMEM_EDIAG2_BASE MSM_HTC_PMEM_EDIAG_BASE
-#define MSM_HTC_PMEM_EDIAG2_SIZE MSM_HTC_PMEM_EDIAG_SIZE
-#define MSM_HTC_PMEM_EDIAG3_BASE MSM_HTC_PMEM_EDIAG_BASE
-#define MSM_HTC_PMEM_EDIAG3_SIZE MSM_HTC_PMEM_EDIAG_SIZE
-
-static struct android_pmem_platform_data android_pmem_ediag_pdata = {
-	.name = "pmem_ediag",
-	.start = MSM_HTC_PMEM_EDIAG_BASE,
-	.size = MSM_HTC_PMEM_EDIAG_SIZE,
-	.no_allocator = 0,
-	.cached = 0,
-};
-
-static struct android_pmem_platform_data android_pmem_ediag1_pdata = {
-	.name = "pmem_ediag1",
-	.start = MSM_HTC_PMEM_EDIAG1_BASE,
-	.size = MSM_HTC_PMEM_EDIAG1_SIZE,
-	.no_allocator = 0,
-	.cached = 0,
-};
-
-static struct android_pmem_platform_data android_pmem_ediag2_pdata = {
-	.name = "pmem_ediag2",
-	.start = MSM_HTC_PMEM_EDIAG2_BASE,
-	.size = MSM_HTC_PMEM_EDIAG2_SIZE,
-	.no_allocator = 0,
-	.cached = 0,
-};
-
-static struct android_pmem_platform_data android_pmem_ediag3_pdata = {
-	.name = "pmem_ediag3",
-	.start = MSM_HTC_PMEM_EDIAG3_BASE,
-	.size = MSM_HTC_PMEM_EDIAG3_SIZE,
-	.no_allocator = 0,
-	.cached = 0,
-};
-
-static struct platform_device android_pmem_ediag_device = {
-	.name = "ediag_pmem",	.id = 1,
-	.dev = { .platform_data = &android_pmem_ediag_pdata },
-};
-
-static struct platform_device android_pmem_ediag1_device = {
-	.name = "ediag_pmem",	.id = 2,
-	.dev = { .platform_data = &android_pmem_ediag1_pdata },
-};
-
-static struct platform_device android_pmem_ediag2_device = {
-	.name = "ediag_pmem",	.id = 3,
-	.dev = { .platform_data = &android_pmem_ediag2_pdata },
-};
-
-static struct platform_device android_pmem_ediag3_device = {
-	.name = "ediag_pmem",	.id = 4,
-	.dev = { .platform_data = &android_pmem_ediag3_pdata },
-};
-#endif
 
 static struct memtype_reserve htc_8226_reserve_table[] __initdata = {
 	[MEMTYPE_SMI] = {
@@ -236,11 +165,7 @@ static void __init htc_8226_reserve(void)
 	of_scan_flat_dt(dt_scan_for_memory_reserve, htc_8226_reserve_table);
 	msm_reserve();
 }
-#ifdef CONFIG_MACH_DUMMY
-#define HTC_8x26_USB1_HS_ID_GPIO 54
-#else
 #define HTC_8x26_USB1_HS_ID_GPIO 1
-#endif
 
 static int64_t htc_8x26_get_usbid_adc(void)
 {
@@ -300,22 +225,6 @@ static struct platform_device cable_detect_device = {
 
 static void msm8x26_cable_detect_register(void)
 {
-#if 0
-FIXME USB PORTING
-	int rc;
-
-	rc = pm8xxx_gpio_config(usb_id_pmic_gpio[0].gpio, &usb_id_pmic_gpio[0].config);
-	if (rc)
-		pr_info("[USB BOARD] %s: Config ERROR: GPIO=%u, rc=%d\n",
-				__func__, usb_id_pmic_gpio[0].gpio, rc);
-
-	cable_detect_pdata.usb_id_pin_gpio = PM8921_GPIO_PM_TO_SYS(USB1_HS_ID_GPIO);
-	cable_detect_pdata.mhl_reset_gpio = PM8921_GPIO_PM_TO_SYS(MHL_RSTz);
-
-	if (board_mfg_mode() == 4)
-		cable_detect_pdata.usb_id_pin_gpio = 0;
-#endif
-
 	platform_device_register(&cable_detect_device);
 }
 
@@ -399,9 +308,6 @@ static struct android_usb_platform_data android_usb_pdata = {
 	.usb_rmnet_interface = "smd,bam",
 	.usb_diag_interface = "diag",
 	.fserial_init_string = "smd:modem,tty,tty:autobot,tty:serial,tty:autobot,tty:acm",
-#ifdef CONFIG_MACH_DUMMY
-	.match = memwl_usb_product_id_match,
-#endif
 	.nluns = 1,
 	.cdrom_lun = 0x1,
 	.vzw_unmount_cdrom = 0,
@@ -433,21 +339,6 @@ static void msm8226_add_usb_devices(void)
 
 	
 	android_usb_pdata.serial_number = board_serialno();
-#ifdef CONFIG_MACH_DUMMY
-	android_usb_pdata.product_id 	= 0x0629;
-#elif defined(CONFIG_MACH_DUMMY)
-	android_usb_pdata.product_id 	= 0x060c;
-	android_usb_pdata.vzw_unmount_cdrom = 1;
-	android_usb_pdata.nluns = 2;
-        android_usb_pdata.cdrom_lun = 0x3;
-#elif defined(CONFIG_MACH_DUMMY)
-	android_usb_pdata.product_id 	= 0x063d;
-#elif defined(CONFIG_MACH_DUMMY)
-	android_usb_pdata.product_id 	= 0x063e;
-	android_usb_pdata.vzw_unmount_cdrom = 1;
-#elif defined(CONFIG_MACH_DUMMY)
-	android_usb_pdata.product_id 	= 0x0647;
-#else
 	id = of_machine_projectid(0);
 	switch (id) {
 		case 297: 
@@ -485,7 +376,6 @@ static void msm8226_add_usb_devices(void)
 			android_usb_pdata.product_id 	= 0x0dff;
 			break;
 	}
-#endif
 	platform_device_register(&android_usb_device);
 }
 
@@ -655,12 +545,6 @@ void __init htc_8226_init(void)
 	msm8226_htc_init_gpiomux();
 	board_dt_populate(adata);
 	htc_8226_add_drivers();
-#ifdef CONFIG_HTC_BUILD_EDIAG
-	platform_device_register(&android_pmem_ediag_device);
-	platform_device_register(&android_pmem_ediag1_device);
-	platform_device_register(&android_pmem_ediag2_device);
-	platform_device_register(&android_pmem_ediag3_device);
-#endif
 #ifdef CONFIG_HTC_POWER_DEBUG
 	htc_monitor_init();
 #endif
