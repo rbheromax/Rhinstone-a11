@@ -350,9 +350,8 @@ CHECKFLAGS     := -D__linux__ -Dlinux -D__STDC__ -Dunix -D__unix__ \
 KERNELFLAGS	= -mcpu=cortex-a7 -mtune=cortex-a7 -marm -mfpu=neon-vfpv4 -mvectorize-with-neon-quad -munaligned-access \
 		  -ffast-math -funsafe-math-optimizations -std=gnu89 -fgcse-after-reload -fgcse-sm -fgcse-las \
 		  -ftree-loop-im -ftree-loop-ivcanon -fweb -frename-registers -ftree-loop-linear -ftree-vectorize \
-		  -fmodulo-sched -fpredictive-commoning -fsingle-precision-constant -ftree-loop-im -ftree-loop-ivcanon \
-		  -floop-interchange -floop-strip-mine -floop-block -fforce-addr -fivopts -fopenmp -fopenmp-simd \
-		  -fsimd-cost-model=unlimited -fgraphite -floop-nest-optimize
+		  -fpredictive-commoning -fsingle-precision-constant -ftree-loop-im -floop-interchange \
+		  -floop-strip-mine -floop-block -fforce-addr -fivopts -fgraphite -floop-nest-optimize
 CFLAGS_MODULE   =
 AFLAGS_MODULE   =
 LDFLAGS_MODULE  =
@@ -375,7 +374,9 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -Werror-implicit-function-declaration \
 		   -Wno-format-security \
 		   -fno-delete-null-pointer-checks \
-		   $(KERNELFLAGS)
+		   --param l1-cache-size=32 --param l1-cache-line-size=32 --param l2-cache-size=1024 \
+		   $(KERNELFLAGS) 
+			
 KBUILD_AFLAGS_KERNEL :=
 KBUILD_CFLAGS_KERNEL :=
 KBUILD_AFLAGS   := -D__ASSEMBLY__
