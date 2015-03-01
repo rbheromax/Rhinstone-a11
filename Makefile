@@ -351,7 +351,8 @@ KERNELFLAGS	= -mcpu=cortex-a7 -mtune=cortex-a7 -marm -mfpu=neon-vfpv4 -mvectoriz
 		  -ffast-math -funsafe-math-optimizations -std=gnu89 -fgcse-after-reload -fgcse-sm -fgcse-las \
 		  -ftree-loop-im -ftree-loop-ivcanon -fweb -frename-registers -ftree-loop-linear -ftree-vectorize \
 		  -fpredictive-commoning -fsingle-precision-constant -ftree-loop-im -floop-interchange \
-		  -floop-strip-mine -floop-block -fforce-addr -fivopts -fgraphite -floop-nest-optimize
+		  -floop-strip-mine -floop-block -fforce-addr -fivopts -floop-nest-optimize \
+		  -fgraphite -floop-flatten -fgraphite-identity
 CFLAGS_MODULE   =
 AFLAGS_MODULE   =
 LDFLAGS_MODULE  =
