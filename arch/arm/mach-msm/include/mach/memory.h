@@ -25,8 +25,6 @@
 /*
 #define KEXEC_HB_KERNEL_LOC		UL(0x3208000)
 */
-#else
-#error "Adress for kexec hardboot page not defined"
 #endif
 
 #define MAX_PHYSMEM_BITS 32
