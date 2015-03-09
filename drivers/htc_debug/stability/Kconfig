@@ -1,5 +1,5 @@
 config DIRTY_SYSTEM_DETECTOR
-        default y
+        default n
         bool "HTC dirty file detector for /system partition"
 
 config HTC_PROCESS_DEBUG
