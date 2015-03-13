@@ -3,8 +3,6 @@
  *
  *  Copyright (C) 1991, 1992  Linus Torvalds
  */
-
-
 #include <linux/slab.h>
 #include <linux/file.h>
 #include <linux/fdtable.h>
@@ -38,6 +36,7 @@
 #include <linux/pipe_fs_i.h>
 #include <linux/oom.h>
 #include <linux/compat.h>
+#include <linux/ksm.h>
 
 #include <asm/uaccess.h>
 #include <asm/mmu_context.h>
@@ -980,7 +979,7 @@ void setup_new_exec(struct linux_binprm * bprm)
 
 
 	current->self_exec_id++;
-			
+
 	flush_signal_handlers(current, 0);
 	flush_old_files(current->files);
 }
