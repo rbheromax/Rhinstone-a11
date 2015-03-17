@@ -407,7 +407,6 @@ int kgsl_context_init(struct kgsl_device_private *dev_priv,
 fail_free_id:
 	write_lock(&device->context_lock);
 	idr_remove(&dev_priv->device->context_idr, id);
-	kgsl_dump_contextpid_locked(&dev_priv->device->context_idr);
 	write_unlock(&device->context_lock);
 fail:
 	return ret;

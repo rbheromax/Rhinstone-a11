@@ -901,8 +901,6 @@ replay:
 
 	kfree(replay);
 
-	adreno_fault_panic(device, fault_pid, keepfault);
-
 	return 1;
 }
 

@@ -246,8 +246,7 @@ static int kgsl_alloc_show(struct device *dev,
 					struct device_attribute *attr,
 					char *buf)
 {
-	return snprintf(buf, PAGE_SIZE, "%d\n",
-			kgsl_get_alloc_size(true));
+	return snprintf(buf, PAGE_SIZE, "%d\n");
 }
 
 DEVICE_ATTR(vmalloc, 0444, kgsl_drv_memstat_show, NULL);
