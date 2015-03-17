@@ -524,9 +524,20 @@ static int msm_compr_send_media_format_block(struct snd_compr_stream *cstream,
 	struct msm_compr_audio *prtd = runtime->private_data;
 	struct asm_aac_cfg aac_cfg;
 	int ret = 0;
-	uint16_t bit_width = 16;
 
 	switch (prtd->codec) {
+#ifdef CONFIG_HD_AUDIO
+	case FORMAT_LINEAR_PCM:
+		pr_debug("FORMAT_LINEAR_PCM SR %d, CH %d",
+				prtd->sample_rate, prtd->num_channels);
+		ret = q6asm_media_format_block_pcm_format_support(
+			prtd->audio_client, prtd->sample_rate,
+			prtd->num_channels, prtd->bits_per_sample);
+
+		if (ret < 0)
+			pr_err("PCM Format block failed = %d\n", ret);
+		break;
+#else
 	case FORMAT_LINEAR_PCM:
 		pr_debug("SND_AUDIOCODEC_PCM\n");
 		if (prtd->codec_param.codec.format == SNDRV_PCM_FORMAT_S24_LE)
@@ -540,6 +551,7 @@ static int msm_compr_send_media_format_block(struct snd_compr_stream *cstream,
 			pr_err("%s: CMD Format block failed\n", __func__);
 
 		break;
+#endif
 	case FORMAT_MP3:
 		/* no media format block needed */
 		break;
@@ -558,18 +570,6 @@ static int msm_compr_send_media_format_block(struct snd_compr_stream *cstream,
 		break;
 	case FORMAT_EAC3:
 		break;
-#ifdef CONFIG_HD_AUDIO
-	case FORMAT_LINEAR_PCM:
-		pr_debug("FORMAT_LINEAR_PCM SR %d, CH %d",
-				prtd->sample_rate, prtd->num_channels);
-		ret = q6asm_media_format_block_pcm_format_support(
-			prtd->audio_client, prtd->sample_rate,
-			prtd->num_channels, prtd->bits_per_sample);
-
-		if (ret < 0)
-			pr_err("PCM Format block failed = %d\n", ret);
-		break;
-#endif
 	default:
 		pr_debug("%s, unsupported format, skip", __func__);
 		break;
@@ -917,11 +917,21 @@ static int msm_compr_set_params(struct snd_compr_stream *cstream,
 	pr_debug("%s: sample_rate %d\n", __func__, prtd->sample_rate);
 
 	switch (params->codec.id) {
+#ifdef CONFIG_HD_AUDIO
 	case SND_AUDIOCODEC_PCM: {
+		pr_err("SND_AUDIOCODEC_PCM format = %d\n",
+				prtd->codec_param.codec.format);
+		prtd->codec = FORMAT_LINEAR_PCM;
+		prtd->bits_per_sample = prtd->codec_param.codec.format;
+		break;
+	}
+#else
+		case SND_AUDIOCODEC_PCM: {
 		pr_debug("SND_AUDIOCODEC_PCM\n");
 		prtd->codec = FORMAT_LINEAR_PCM;
 		break;
 	}
+#endif
 
 	case SND_AUDIOCODEC_MP3: {
 		pr_debug("SND_AUDIOCODEC_MP3\n");
@@ -948,16 +958,6 @@ static int msm_compr_set_params(struct snd_compr_stream *cstream,
 		frame_sz = EAC3_OUTPUT_FRAME_SZ;
 		break;
 	}
-
-#ifdef CONFIG_HD_AUDIO
-	case SND_AUDIOCODEC_PCM: {
-		pr_err("SND_AUDIOCODEC_PCM format = %d\n",
-				prtd->codec_param.codec.format);
-		prtd->codec = FORMAT_LINEAR_PCM;
-		prtd->bits_per_sample = prtd->codec_param.codec.format;
-		break;
-	}
-#endif
 
 	default:
 		pr_err("codec not supported, id =%d\n", params->codec.id);
