@@ -1174,18 +1174,6 @@ int qpnp_pin_dump(struct seq_file *m, int curr_len, char *gpio_buffer)
                         else
                                 len += sprintf(read_buf + len, "MPP[%2d]: ", q_spec->pmic_pin);
 
-                        for (j = 0; j < Q_NUM_PARAMS; j++) {
-                                type = dfs_args[j].type;
-                                filename = dfs_args[j].filename;
-
-                                rc = qpnp_pin_check_config(type, q_spec, 0);
-                                if (rc == -ENXIO)
-                                        continue;
-
-                                qpnp_pin_debugfs_get(&q_spec->params[type], &value);
-                                len += sprintf(read_buf + len, "[%s]%llu ", filename, value);
-                        }
-
                         read_buf[255] = '\0';
                         if (m)
                                 seq_printf(m, "%s\n", read_buf);
