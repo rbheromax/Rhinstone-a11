@@ -294,7 +294,7 @@ static void clock_debug_print_enabled_clocks(struct seq_file *m)
 
 static int enabled_clocks_show(struct seq_file *m, void *unused)
 {
-	clock_debug_print_enabled_clocks(m);
+	//clock_debug_print_enabled_clocks(m);
 	return 0;
 }
 
@@ -728,5 +728,5 @@ void clock_debug_print_enabled(void)
 	if (likely(!debug_suspend))
 		return;
 
-	clock_debug_print_enabled_clocks(NULL);
+	//clock_debug_print_enabled_clocks(NULL);
 }
