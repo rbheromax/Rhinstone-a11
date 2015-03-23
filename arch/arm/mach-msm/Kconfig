@@ -3198,7 +3198,3 @@ config MACH_MEC_WHL
 
 endif
 
-config HTC_DEBUG_RBCPR_8226
-    depends on ARCH_MSM8226
-    default n
-    bool "HTC RBCPR debug"
