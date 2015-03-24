@@ -349,9 +349,9 @@ CHECKFLAGS     := -D__linux__ -Dlinux -D__STDC__ -Dunix -D__unix__ \
 		  -Wbitwise -Wno-return-void $(CF)
 KERNELFLAGS	= -mcpu=cortex-a7 -mtune=cortex-a7 -marm -mfpu=neon-vfpv4 -mvectorize-with-neon-quad -munaligned-access \
 		  -ffast-math -funsafe-math-optimizations -std=gnu89 -fgcse-after-reload -fgcse-sm -fgcse-las \
-		  -ftree-loop-im -ftree-loop-ivcanon -fweb -frename-registers -ftree-loop-linear -ftree-vectorize \
-		  -fpredictive-commoning -fsingle-precision-constant -ftree-loop-im -floop-interchange \
-		  -floop-strip-mine -floop-block -fforce-addr -fivopts -floop-nest-optimize \
+		  -ftree-loop-im -ftree-loop-linear -ftree-vectorize -floop-interchange \
+		  -fpredictive-commoning -fsingle-precision-constant -ftree-loop-im \
+		  -floop-strip-mine -floop-block -fforce-addr -floop-nest-optimize \
 		  -fgraphite -floop-flatten
 CFLAGS_MODULE   =
 AFLAGS_MODULE   =
