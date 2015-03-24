@@ -15,38 +15,10 @@
 #include <asm/page.h>
 #include <asm/pgtable.h>
 
-#include <htc_debug/stability/htc_report_meminfo.h>
-
 #include "internal.h"
 
 void __attribute__((weak)) arch_report_meminfo(struct seq_file *m)
 {
-}
-
-static unsigned long subtotal_pages(struct sysinfo *i)
-{
-	unsigned long kernel_stack_pages =
-	                (global_page_state(NR_KERNEL_STACK) * THREAD_SIZE) >> PAGE_SHIFT;
-	unsigned long slab_pages = global_page_state(NR_SLAB_RECLAIMABLE) +
-	                           global_page_state(NR_SLAB_UNRECLAIMABLE);
-
-
-	return global_page_state(NR_ANON_PAGES) +               
-	       i->bufferram +                                   
-	       cached_unmapped_pages(i) +                       
-	       meminfo_total_pages(NR_DMA_PAGES) +              
-	       meminfo_total_pages(NR_DRIVER_ALLOC_PAGES) +     
-	       0UL +                                            
-	       meminfo_total_pages(NR_IOMMU_PAGETABLES_PAGES) +                                 
-	       kernel_stack_pages +                                                     
-	       meminfo_total_pages(NR_KMALLOC_PAGES) +          
-	       global_page_state(NR_FILE_MAPPED) +              
-	       i->freeram +                                     
-	       global_page_state(NR_PAGETABLE) +                
-	       slab_pages +                                     
-	       total_swapcache_pages +                          
-	       vmalloc_alloc_pages();                           
-
 }
 
 static inline unsigned long cached_pages(struct sysinfo *i)
@@ -64,14 +36,12 @@ void show_meminfo(void)
 {
 	struct sysinfo i;
 	long cached;
-	unsigned long vmalloc_alloc = vmalloc_alloc_pages();
 	unsigned long subtotal;
 
 #define K(x) ((x) << (PAGE_SHIFT - 10))
 	si_meminfo(&i);
 	si_swapinfo(&i);
 	cached = cached_pages(&i);
-	subtotal = subtotal_pages(&i);
 
 	printk("MemFree:        %8lu kB\n"
 			"Buffers:        %8lu kB\n"
@@ -96,8 +66,6 @@ void show_meminfo(void)
 			K(global_page_state(NR_SLAB_RECLAIMABLE) + global_page_state(NR_SLAB_UNRECLAIMABLE)),
 			K(global_page_state(NR_PAGETABLE)),
 			global_page_state(NR_KERNEL_STACK) * THREAD_SIZE / 1024,
-			K(vmalloc_alloc),
-			K(meminfo_total_pages(NR_KMALLOC_PAGES)),
 			K(subtotal));
 #undef K
 }
@@ -244,11 +212,7 @@ static int meminfo_proc_show(struct seq_file *m, void *v)
 		(unsigned long)(VMALLOC_TOTAL + report_vmalloc_saving_size()) >> 10,
 		vmi.used >> 10,
 		vmi.ioremap >> 10,
-#ifdef CONFIG_HTC_DEBUG_REPORT_MEMINFO
-		K(meminfo_total_pages(NR_VMALLOC_PAGES)),
-#else
 		vmi.alloc >> 10,
-#endif
 		vmi.map >> 10,
 		vmi.usermap >> 10,
 		vmi.vpages >> 10,
@@ -265,8 +229,6 @@ static int meminfo_proc_show(struct seq_file *m, void *v)
 	hugetlb_report_meminfo(m);
 
 	arch_report_meminfo(m);
-
-	report_meminfo(m, &i);
 
 	return 0;
 #undef K

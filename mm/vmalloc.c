@@ -32,9 +32,6 @@
 #include <asm/shmparam.h>
 #include <asm/setup.h>
 
-#include <htc_debug/stability/htc_report_meminfo.h>
-
-
 static void vunmap_pte_range(pmd_t *pmd, unsigned long addr, unsigned long end)
 {
 	pte_t *pte;
@@ -1367,8 +1364,6 @@ static void __vunmap(const void *addr, int deallocate_pages)
 			__free_page(page);
 		}
 
-		sub_meminfo_total_pages(NR_VMALLOC_PAGES, area->nr_pages);
-
 		if (area->flags & VM_VPAGES)
 			vfree(area->pages);
 		else
@@ -1506,8 +1501,6 @@ void *__vmalloc_node_range(unsigned long size, unsigned long align,
 	addr = __vmalloc_area_node(area, gfp_mask, prot, node, caller);
 	if (!addr)
 		return NULL;
-
-	add_meminfo_total_pages(NR_VMALLOC_PAGES, area->nr_pages);
 
 	insert_vmalloc_vmlist(area);
 

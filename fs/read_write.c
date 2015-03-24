@@ -20,7 +20,6 @@
 #include <asm/uaccess.h>
 #include <asm/unistd.h>
 #include <mach/devices_cmdline.h>
-#include <htc_debug/stability/dirty_file_detector.h>
 
 const struct file_operations generic_ro_fops = {
 	.llseek		= generic_file_llseek,

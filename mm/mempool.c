@@ -15,8 +15,6 @@
 #include <linux/blkdev.h>
 #include <linux/writeback.h>
 
-#include <htc_debug/stability/htc_report_meminfo.h>
-
 static void add_element(mempool_t *pool, void *element)
 {
 	BUG_ON(pool->curr_nr >= pool->min_nr);
@@ -250,9 +248,6 @@ void *mempool_alloc_pages(gfp_t gfp_mask, void *pool_data)
 {
 	int order = (int)(long)pool_data;
 	struct page *page = alloc_pages(gfp_mask, order);
-
-	add_meminfo_total_pages_on(NR_MEMPOOL_ALLOC_PAGES, 1 << order, page);
-
 	return page;
 }
 EXPORT_SYMBOL(mempool_alloc_pages);
@@ -260,9 +255,6 @@ EXPORT_SYMBOL(mempool_alloc_pages);
 void mempool_free_pages(void *element, void *pool_data)
 {
 	int order = (int)(long)pool_data;
-
-	sub_meminfo_total_pages_on(NR_MEMPOOL_ALLOC_PAGES, 1 << order,
-			element && virt_addr_valid((void *)element));
 
 	if (element)
 	    __free_pages(element, order);
